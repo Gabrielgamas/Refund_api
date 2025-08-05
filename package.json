@@ -9,6 +9,8 @@
   "license": "ISC",
   "description": "API de solicitação de reembolso",
   "dependencies": {
+    "@types/cors": "^2.8.17",
+    "cors": "^2.8.5",
     "express": "^4.19.2"
   },
   "devDependencies": {
