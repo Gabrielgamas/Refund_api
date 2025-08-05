@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
-import { UserRole } from "@prisma/client";
 import { prisma } from "@/database/prisma";
 import { z } from "zod";
 import { AppError } from "@/utils/AppErrors";
-import { hash } from "bcrypt";
+import { compare } from "bcrypt";
 
 class SessionsController {
   async create(request: Request, response: Response) {
@@ -13,6 +12,18 @@ class SessionsController {
     });
 
     const { email, password } = bodySchema.parse(request.body);
+
+    const user = await prisma.user.findFirst({ where: { email } });
+
+    if (!user) {
+      throw new AppError("Email ou senha inválido", 401);
+    }
+
+    const passwordMatched = await compare(password, user.password);
+
+    if (!passwordMatched) {
+      throw new AppError("Email ou senha inválido", 401);
+    }
 
     return response.json({ email, password });
   }
